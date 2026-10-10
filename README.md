@@ -1,0 +1,68 @@
+Blender to Unreal Sequencer Exporter
+
+Turn an animated Blender shot into a fully built Unreal Engine Level Sequence in one click.
+
+What it does
+
+Moving a shot from Blender to Unreal usually means exporting an FBX, rebuilding materials, setting up Sequencer and recreating the camera by hand. Lens and focus data are often lost on the way. This tool automates the whole process.
+
+Blender add-on exports:
+
+the character with baked animation (FBX)
+the textures, copied next to the export
+a per-frame camera JSON: position, rotation, focal length, sensor size and focus
+
+Unreal scripts add two buttons (Tools menu and toolbar):
+
+Import Sequencer imports the character, animation and textures, rebuilds the materials, and builds a Level Sequence with the character, animation, camera and camera cut.
+Set Camera Options applies the Blender focal length and sensor to the camera and sets Tracking focus on the character.
+Features
+Camera matches Blender frame by frame, including focal length, sensor and focus
+Blender to Unreal conversion handled for you (axes, units, rotations)
+Automatic texture import and material rebuild
+Scene validation in Blender before export (missing animation, textures or camera)
+Progress bar, replace confirmation and remembered export folder in Unreal
+Requirements
+Blender 3.6 or newer
+Unreal Engine 5.7 (tested on 5.7.4) with the Python Editor Script Plugin enabled
+Windows (the folder pickers in Unreal use PowerShell)
+Installation
+
+Blender
+
+Open Edit > Preferences > Add-ons > Install.
+Select blender/ue_sequence_exporter.py and enable it.
+The panel appears in the 3D Viewport sidebar (press N) under the UE Sequencer tab.
+
+Unreal
+
+Enable Edit > Plugins > Python Editor Script Plugin, then restart the editor.
+Copy the three files from unreal/Content/Python/ into your project's Content/Python/ folder:
+init_unreal.py
+ue_sequencer_ui.py
+ue_build_sequence.py
+Restart Unreal. Import Sequencer and Set Camera Options now appear under the Tools menu and in the toolbar.
+
+If your project already has an init_unreal.py, add its contents to the existing file instead of replacing it.
+
+Usage
+In Blender: select your character, set up the camera and animation, open the UE Sequencer panel and click Export to UE Sequencer. Fix any problems the validation reports.
+In Unreal: click Import Sequencer, pick the export folder, confirm the sequence name, and wait for it to finish. The sequence opens in Sequencer.
+With the sequence open, click Set Camera Options to apply the Blender lens and sensor and set Tracking focus on the character.
+
+Imported assets go to /Game/Shots/<ShotName>. Importing the same shot again replaces that folder.
+
+How it works
+Blender samples the camera every frame and converts it to Unreal space (Y flipped, metres to centimetres, rotation rebuilt from the camera axes with yaw and roll unwrapped).
+Textures are copied and listed in a manifest, because FBX material links are unreliable.
+Unreal imports the FBX, imports the textures, and builds materials from the manifest.
+The Level Sequence is built step by step (character, animation, camera, camera cut), checking after each step that the binding was created.
+Known limitations
+One character and one camera per shot
+Lights are not exported yet
+The sequence uses spawnable actors, so camera settings are applied by Set Camera Options after the import
+Tested on Windows only
+Roadmap
+Light export
+Multiple characters
+Package as an Unreal plugin
